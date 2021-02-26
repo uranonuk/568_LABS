@@ -1,0 +1,11 @@
+#Uran Onuk, 1004413253, uran.onuk@mail.utoronto.char
+
+SPLOIT1:
+    In target1, there was a buffer overflow vulnerability, where an unchecked strcpy was used. 
+    From gdb, I saw where the beginning of the buffer to overflow is and calculated how further away the rip is. (120B + 4B for the return address field) Initialized the injection string. Added NOPs after strcat ing the injection str up until byte 120. Appended the address of the beginning of the injection string for bytes 120-124 to overflow return address of the program.
+
+SPLOIT2:
+    In target2, if we can overwrite the value of len, we can avoid this security layer. From gdb, I found &buf, &i, &len and rips for lab_main and foo. Once the return address field is found, worked backwards to put NOPs at the beginning, then the shellcode, NOPs at the end and in between. I basically did not touch i inside the for loops, overwriting the value of len to 283, which was the size of the injection string.
+SPLOIT3:
+    
+SPLOIT4:

