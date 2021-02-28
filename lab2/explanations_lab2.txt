@@ -1,0 +1,41 @@
+# Uran Onuk, 1004413253, uran.onuk@mail.utoronto.ca
+
+************* PART 1: ***************
+
+generateQRcode:
+
+encode accountName, issuer with urlEncode()
+convert secret from hex to byte array, and encode secret with base32_encode()
+create URI using snprintf
+
+validateQRcode
+
+convert secret hex to bytearray, but don't encode. 
+calculate:
+	HMAC = H( (key ^ outerpad ) concat. H( (key ^ipad) concat. period) )
+period = time(NULL) / 30
+
+************* PART 2 *****************
+
+getAuthenticatorStatus:
+
+GET call to given url, extract status and biometric modalities. 
+Return active if status == "active" and at least one bio. modalities == "enrolled".
+
+sendStepup:
+
+POST call to given url, with params:
+
+data = {
+			'user_uuid': self.userId,
+			'transaction_id': transactionId, 
+			'message': message
+		}
+
+extract uuid and store it in self.uuid
+
+getStepupStatus:
+
+GET call to given url, extract and return status
+
+
